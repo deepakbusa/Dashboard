@@ -88,18 +88,6 @@ async function startServer() {
             console.error('❌ Server error:', error);
         });
 
-        // Monitor connections
-        let connections = 0;
-        server.on('connection', (socket) => {
-            connections++;
-            console.log(`📡 New connection. Total: ${connections}`);
-            
-            socket.on('close', () => {
-                connections--;
-                console.log(`📡 Connection closed. Total: ${connections}`);
-            });
-        });
-
         // Graceful shutdown
         process.on('SIGTERM', async () => {
             console.log('🛑 SIGTERM received, closing server gracefully...');

@@ -118,16 +118,6 @@ const LoginPage = () => {
                             )}
                         </button>
                     </form>
-
-                    {/* Default Credentials Notice */}
-                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-xs text-blue-800">
-                            <strong>Default credentials:</strong><br />
-                            Username: admin<br />
-                            Password: admin123<br />
-                            <span className="text-blue-600">Please change after first login!</span>
-                        </p>
-                    </div>
                 </div>
 
                 {/* Footer */}
