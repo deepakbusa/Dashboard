@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Search, UserPlus, Edit, Trash2, Ban, CheckCircle, X, Info } from 'lucide-react';
+import { Search, UserPlus, Edit, Trash2, Ban, CheckCircle, X, Info, Eye, EyeOff } from 'lucide-react';
 import Pagination from '../components/Pagination';
 import UserDetailModal from '../components/UserDetailModal';
-import { getUsers, deleteUser, blockUser, unblockUser } from '../services/api';
+import { getUsers, deleteUser, blockUser, unblockUser, createUser } from '../services/api';
 
 const UsersPage = () => {
     const [users, setUsers] = useState([]);
@@ -14,6 +14,7 @@ const UsersPage = () => {
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [showAddUserModal, setShowAddUserModal] = useState(false);
     const [newUser, setNewUser] = useState({ userId: '', email: '', fullName: '', password: '', plan: 'free' });
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         fetchUsers();
@@ -79,25 +80,18 @@ const UsersPage = () => {
     };
 
     const handleAddUser = async () => {
-        if (!newUser.userId || !newUser.email || !newUser.password) {
-            alert('User ID, Email, and Password are required');
+        if (!newUser.userId || !newUser.password) {
+            alert('User ID and Password are required');
             return;
         }
         try {
-            const response = await fetch('http://localhost:5000/api/users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify(newUser)
-            });
-            if (!response.ok) throw new Error('Failed to add user');
+            await createUser(newUser);
             setShowAddUserModal(false);
             setNewUser({ userId: '', email: '', fullName: '', password: '', plan: 'free' });
+            setShowPassword(false);
             fetchUsers();
         } catch (error) {
-            alert(error.message || 'Failed to add user');
+            alert(error.response?.data?.error || 'Failed to add user');
         }
     };
 
@@ -302,13 +296,13 @@ const UsersPage = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                                 <input
                                     type="email"
                                     value={newUser.email}
                                     onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                    placeholder="user@example.com"
+                                    placeholder="user@example.com (optional)"
                                 />
                             </div>
                             <div>
@@ -323,16 +317,25 @@ const UsersPage = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
-                                <input
-                                    type="password"
-                                    value={newUser.password}
-                                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                    placeholder="Enter password for new user"
-                                    required
-                                    autoComplete="new-password"
-                                    minLength={6}
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        value={newUser.password}
+                                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                                        className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                        placeholder="Enter password for new user"
+                                        required
+                                        autoComplete="new-password"
+                                        minLength={6}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                    >
+                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Plan</label>

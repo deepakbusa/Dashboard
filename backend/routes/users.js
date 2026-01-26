@@ -145,10 +145,10 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
         const db = getDatabase();
         const { userId, password, email, fullName, role, plan } = req.body;
 
-        if (!userId || !email || !password) {
+        if (!userId || !password) {
             return res.status(400).json({
                 success: false,
-                error: 'User ID, email, and password are required'
+                error: 'User ID and password are required'
             });
         }
 

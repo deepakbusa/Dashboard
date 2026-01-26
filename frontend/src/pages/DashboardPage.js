@@ -66,18 +66,12 @@ const DashboardPage = () => {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
                 <StatCard
                     title="Total Users"
                     value={overview?.totalUsers || 0}
                     icon={Users}
                     color="blue"
-                />
-                <StatCard
-                    title="Active Users"
-                    value={overview?.activeUsers || 0}
-                    icon={Activity}
-                    color="green"
                 />
                 <StatCard
                     title="Blocked Users"

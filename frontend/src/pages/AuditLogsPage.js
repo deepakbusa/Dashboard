@@ -146,7 +146,7 @@ const AuditLogsPage = () => {
                                             {getActionBadge(log.action)}
                                         </td>
                                         <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                                            {log.username || 'System'}
+                                            {log.userId || log.username || 'System'}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600">
                                             {log.details || 'No details available'}
