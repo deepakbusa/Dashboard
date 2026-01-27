@@ -104,18 +104,19 @@ const SessionsPage = () => {
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">Session ID</th>
                                 <th className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">User</th>
+                                <th className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap hidden sm:table-cell">Email</th>
+                                <th className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap hidden md:table-cell">Plan</th>
                                 <th className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">Status</th>
-                                <th className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap hidden md:table-cell">Started</th>
-                                <th className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap hidden lg:table-cell">Last Activity</th>
+                                <th className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap hidden lg:table-cell">Started</th>
+                                <th className="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap hidden xl:table-cell">Session ID</th>
                                 <th className="px-3 sm:px-4 lg:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan="6" className="px-6 py-8 text-center">
+                                    <td colSpan="7" className="px-6 py-8 text-center">
                                         <div className="flex justify-center">
                                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
                                         </div>
@@ -124,21 +125,41 @@ const SessionsPage = () => {
                             ) : sessions.length > 0 ? (
                                 sessions.map((session) => (
                                     <tr key={session._id} className="hover:bg-gray-50">
-                                        <td className="px-3 sm:px-4 lg:px-6 py-4 text-xs sm:text-sm text-gray-900 font-mono">
-                                            <span className="hidden sm:inline">{session.sessionId.slice(0, 12)}...</span>
-                                            <span className="sm:hidden">{session.sessionId.slice(0, 8)}...</span>
+                                        <td className="px-3 sm:px-4 lg:px-6 py-4">
+                                            <div>
+                                                <div className="text-xs sm:text-sm font-medium text-gray-900">
+                                                    {session.username || session.userId || 'Unknown'}
+                                                </div>
+                                                {session.userFullName && session.userFullName !== 'N/A' && (
+                                                    <div className="text-xs text-gray-500">{session.userFullName}</div>
+                                                )}
+                                            </div>
                                         </td>
-                                        <td className="px-3 sm:px-4 lg:px-6 py-4 text-xs sm:text-sm text-gray-900 truncate max-w-[100px] sm:max-w-none">
-                                            {session.username || session.userId || 'Unknown'}
+                                        <td className="px-3 sm:px-4 lg:px-6 py-4 text-xs sm:text-sm text-gray-600 hidden sm:table-cell truncate max-w-[150px]">
+                                            {session.userEmail || 'N/A'}
+                                        </td>
+                                        <td className="px-3 sm:px-4 lg:px-6 py-4 hidden md:table-cell">
+                                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                                                session.userPlan === 'premium' 
+                                                    ? 'bg-purple-100 text-purple-800' 
+                                                    : 'bg-gray-100 text-gray-800'
+                                            }`}>
+                                                {session.userPlan || 'free'}
+                                            </span>
                                         </td>
                                         <td className="px-3 sm:px-4 lg:px-6 py-4">
                                             {getStatusBadge(session)}
-                                        </td>
-                                        <td className="px-3 sm:px-4 lg:px-6 py-4 text-xs sm:text-sm text-gray-500 hidden md:table-cell">
-                                            {session.loginAt ? new Date(session.loginAt).toLocaleString() : 'N/A'}
+                                            {session.userIsBlocked && (
+                                                <span className="ml-2 px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                                                    Blocked
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-3 sm:px-4 lg:px-6 py-4 text-xs sm:text-sm text-gray-500 hidden lg:table-cell">
-                                            {session.lastActivityAt ? new Date(session.lastActivityAt).toLocaleString() : 'N/A'}
+                                            {session.loginAt ? new Date(session.loginAt).toLocaleString() : 'N/A'}
+                                        </td>
+                                        <td className="px-3 sm:px-4 lg:px-6 py-4 text-xs text-gray-500 font-mono hidden xl:table-cell">
+                                            {session.sessionId.slice(0, 12)}...
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             {session.isActive && (

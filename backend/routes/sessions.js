@@ -29,8 +29,20 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
             db.collection('sessions').countDocuments(query)
         ]);
 
+        // Fetch user details for each session
+        const sessionsWithUserDetails = await Promise.all(sessions.map(async (session) => {
+            const user = await db.collection('users').findOne({ userId: session.userId });
+            return {
+                ...session,
+                userEmail: user?.email || 'N/A',
+                userFullName: user?.fullName || 'N/A',
+                userPlan: user?.plan || 'N/A',
+                userIsBlocked: user?.isBlocked || false
+            };
+        }));
+
         res.json({
-            sessions,
+            sessions: sessionsWithUserDetails,
             total,
             page,
             totalPages: Math.ceil(total / limit)
