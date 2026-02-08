@@ -146,4 +146,44 @@ router.post('/cleanup', authenticateToken, requireAdmin, async (req, res) => {
     }
 });
 
+// Validate session status (for app to check if session is still active)
+router.get('/validate/:sessionId', async (req, res) => {
+    try {
+        const db = getDatabase();
+        const { sessionId } = req.params;
+
+        const session = await db.collection('sessions').findOne({ sessionId });
+
+        if (!session) {
+            return res.json({
+                valid: false,
+                reason: 'Session not found'
+            });
+        }
+
+        if (!session.isActive) {
+            return res.json({
+                valid: false,
+                reason: 'Session ended by admin',
+                endedAt: session.logoutAt,
+                endReason: session.logoutReason || 'Session terminated'
+            });
+        }
+
+        res.json({
+            valid: true,
+            sessionId: session.sessionId,
+            userId: session.userId,
+            loginAt: session.loginAt
+        });
+
+    } catch (error) {
+        console.error('Validate session error:', error);
+        res.status(500).json({
+            valid: false,
+            reason: 'Server error'
+        });
+    }
+});
+
 module.exports = router;
